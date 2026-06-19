@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -30,6 +31,15 @@ class Category extends Model
         static::creating(function (Category $category) {
             $category->slug = $category->slug ?? Str::slug($category->name);
         });
+    }
+
+    public function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $value
+                ? (str_starts_with($value, 'http') ? $value : asset('storage/' . $value))
+                : null,
+        );
     }
 
     public function products()

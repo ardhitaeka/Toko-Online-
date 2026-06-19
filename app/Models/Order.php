@@ -9,6 +9,10 @@ class Order extends Model
 {
     use HasFactory;
 
+    /**
+     * Kolom-kolom yang boleh diisi secara massal (mass assignment)
+     * Ini mencegah user mengisi kolom yang tidak seharusnya
+     */
     protected $fillable = [
         'order_number',
         'user_id',
@@ -21,8 +25,13 @@ class Order extends Model
         'payment_status',
         'shipping_address',
         'notes',
+        'payment_reference', // Nomor VA atau TRX ID (ditambahkan via migrasi)
     ];
 
+    /**
+     * Casting tipe data untuk kolom tertentu
+     * Memastikan harga dalam format decimal dengan 2 angka di belakang koma
+     */
     protected function casts(): array
     {
         return [
@@ -33,6 +42,11 @@ class Order extends Model
         ];
     }
 
+    /**
+     * EVENT: BOOTED (dijalankan saat model pertama kali digunakan)
+     * creating: otomatis mengisi order_number sebelum data disimpan ke database
+     * Format nomor: ORD-{random_string}
+     */
     protected static function booted(): void
     {
         static::creating(function (Order $order) {
@@ -40,21 +54,39 @@ class Order extends Model
         });
     }
 
+    /**
+     * RELASI: Order milik User
+     * Setiap order terhubung ke satu user (pembeli)
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * RELASI: Order milik Customer (alias dari user)
+     * Sama seperti relasi user() tapi dengan nama berbeda untuk kejelasan konteks
+     */
     public function customer()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * RELASI: Order memiliki banyak OrderItem
+     * Satu order bisa berisi beberapa item produk
+     */
     public function items()
     {
         return $this->hasMany(OrderItem::class);
     }
 
+    /**
+     * ACCESSOR: status_label
+     * Mengubah kode status (pending, processing, dll) menjadi teks yang mudah dibaca
+     * Contoh: 'pending' => 'Menunggu'
+     * Cara panggil di Blade: $order->status_label
+     */
     public function getStatusLabelAttribute()
     {
         return match ($this->status) {
@@ -67,6 +99,12 @@ class Order extends Model
         };
     }
 
+    /**
+     * ACCESSOR: status_color
+     * Mengembalikan class CSS Tailwind untuk warna badge status
+     * Setiap status punya warna berbeda agar mudah dikenali
+     * Cara panggil di Blade: $order->status_color
+     */
     public function getStatusColorAttribute()
     {
         return match ($this->status) {
@@ -79,6 +117,12 @@ class Order extends Model
         };
     }
 
+    /**
+     * ACCESSOR: payment_status_label
+     * Mengubah kode payment_status menjadi teks yang mudah dibaca
+     * Contoh: 'unpaid' => 'Belum Bayar', 'paid' => 'Sudah Bayar'
+     * Cara panggil di Blade: $order->payment_status_label
+     */
     public function getPaymentStatusLabelAttribute()
     {
         return match ($this->payment_status) {
@@ -89,6 +133,12 @@ class Order extends Model
         };
     }
 
+    /**
+     * ACCESSOR: payment_method_label
+     * Mengubah kode payment_method menjadi teks yang mudah dibaca
+     * Contoh: 'transfer' => 'Transfer Bank', 'cod' => 'COD'
+     * Cara panggil di Blade: $order->payment_method_label
+     */
     public function getPaymentMethodLabelAttribute()
     {
         return match ($this->payment_method) {

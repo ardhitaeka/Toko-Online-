@@ -18,7 +18,7 @@
     @endif
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <form method="POST" action="{{ route('categories.store') }}">
+        <form method="POST" action="{{ route('categories.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="space-y-5">
                 <div>
@@ -28,6 +28,10 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
                     <textarea name="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">{{ old('description') }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
+                    <input type="file" name="image" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
                 </div>
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" id="is_active" checked class="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
