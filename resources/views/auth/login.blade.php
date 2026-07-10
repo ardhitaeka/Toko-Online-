@@ -54,12 +54,5 @@
             Belum punya akun? <a href="{{ route('register') }}" class="text-pink-500 font-semibold hover:underline">Daftar di sini</a>
         </p>
     </div>
-
-    {{-- === INFO DEMO LOGIN (untuk testing) === --}}
-    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-        <p class="text-xs text-gray-500 font-semibold mb-2">Demo Login:</p>
-        <p class="text-xs text-gray-500">Admin: admin@fashionstore.id / password</p>
-        <p class="text-xs text-gray-500">Customer: rina@email.com / password</p>
-    </div>
 </div>
 @endsection
